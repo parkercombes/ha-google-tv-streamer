@@ -1,0 +1,18 @@
+MEDIA SESSION SERVICE (dumpsys media_session)
+
+  Media button session is com.peacocktv.peacockandroid/MainActivity (userId=0)
+  Sessions Stack - have 5 sessions:
+    MainActivity com.peacocktv.peacockandroid/MainActivity (userId=0)
+      ownerPid=25900, ownerUid=10125, userId=0
+      package=com.peacocktv.peacockandroid
+      launchIntent=null
+      mediaButtonReceiver=null
+      active=true
+      flags=3
+      rating type=0
+      controllers: 4
+      state=PlaybackState {state=PLAYING(3), position=4177341857, buffered position=0, speed=1.0, updated=6042632601, actions=519, custom actions=[], active item id=-1, error=null}
+      metadata: size=6, description=null, null, null
+      queueTitle=null, size=0
+Audio playback (lastly played comes first)
+  uid=10125 packages=com.peacocktv.peacockandroid

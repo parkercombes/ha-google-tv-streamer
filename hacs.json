@@ -1,0 +1,18 @@
+{
+  "name": "Google TV Streamer",
+  "description": "Home Assistant integration for deep control of the Google TV Streamer (2024) over network ADB.",
+  "domain": "google_tv_streamer",
+  "documentation": "https://github.com/your-repository/google_tv_streamer",
+  "issue_tracker": "https://github.com/your-repository/google_tv_streamer/issues",
+  "version": "0.0.1",
+  "requirements": [],
+  "codeowners": [],
+  "config_flow": true,
+  "reset": false,
+  "zeroconf": [
+    "_android-adb._tcp.local."
+  ],
+  "dependencies": [],
+  "integration_type": "device",
+  "render_readme": true
+}

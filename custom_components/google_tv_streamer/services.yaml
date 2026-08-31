@@ -1,0 +1,27 @@
+launch_app:
+  name: Launch app
+  description: Launch a known app by friendly name/package id, or open a deep link URL.
+  fields:
+    name:
+      name: Name
+      description: Friendly app name from the integration list, or an Android package id.
+      required: false
+      selector:
+        text:
+    url:
+      name: URL
+      description: Deep link URL to launch on the streamer.
+      required: false
+      selector:
+        text:
+
+send_key:
+  name: Send key
+  description: Send a remote key command to the streamer.
+  fields:
+    key:
+      name: Key
+      description: Friendly key name or Android KEYCODE_* value.
+      required: true
+      selector:
+        text:

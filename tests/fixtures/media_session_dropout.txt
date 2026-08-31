@@ -1,0 +1,12 @@
+MEDIA SESSION SERVICE (dumpsys media_session)
+
+  Media button session is null
+  Sessions Stack - have 2 sessions:
+    BluetoothMediaBrowserService com.google.android.bluetooth/BluetoothMediaBrowserService (userId=0)
+      package=com.google.android.bluetooth
+      active=false
+      state=PlaybackState {state=ERROR(7), position=0, buffered position=0, speed=0.0, updated=26910, actions=0, custom actions=[], active item id=-1, error=Bluetooth audio disconnected}
+      metadata: null
+Audio playback (lastly played comes first)
+  uid=10128 packages=com.collegehumor.chdropout
+  uid=10116 packages=com.netflix.ninja

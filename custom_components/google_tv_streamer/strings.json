@@ -1,0 +1,18 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Google TV Streamer",
+        "description": "Enter the host for your Google TV Streamer. ADB pairing must already be authorized.",
+        "data": {
+          "host": "Host",
+          "port": "ADB port",
+          "name": "Name"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This Google TV Streamer is already configured."
+    }
+  }
+}

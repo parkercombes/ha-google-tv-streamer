@@ -1,0 +1,2 @@
+ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)
+  ResumedActivity: ActivityRecord{65d4bed u0 com.amazon.amazonvideo.livingroom/com.amazon.ignition.IgnitionActivity t3988}

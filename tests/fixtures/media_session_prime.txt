@@ -1,0 +1,18 @@
+MEDIA SESSION SERVICE (dumpsys media_session)
+
+  Media button session is com.amazon.amazonvideo.livingroom/com.amazon.amazonvideo.livingroom (userId=0)
+  Sessions Stack - have 4 sessions:
+    com.amazon.amazonvideo.livingroom com.amazon.amazonvideo.livingroom/com.amazon.amazonvideo.livingroom (userId=0)
+      ownerPid=30170, ownerUid=10118, userId=0
+      package=com.amazon.amazonvideo.livingroom
+      launchIntent=null
+      mediaButtonReceiver=null
+      active=true
+      flags=3
+      rating type=0
+      controllers: 4
+      state=PlaybackState {state=PLAYING(3), position=16016, buffered position=0, speed=1.0, updated=6042504052, actions=1049455, custom actions=[], active item id=-1, error=null}
+      metadata: size=7, description=PrimeVideo, null, null
+      queueTitle=null, size=0
+Audio playback (lastly played comes first)
+  uid=10118 packages=com.amazon.amazonvideo.livingroom
