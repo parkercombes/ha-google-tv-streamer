@@ -1,0 +1,10 @@
+{
+  "media_session_youtube.txt":  {"package": "com.google.android.youtube.tv",        "state": "playing", "position_ms": 387,     "title": "Me at the zoo", "subtitle": "jawed", "position_reliable": true},
+  "media_session_netflix.txt":  {"package": "com.netflix.ninja",                    "state": "playing", "position_ms": 17324,   "title": null,            "subtitle": null,    "position_reliable": true},
+  "media_session_prime.txt":    {"package": "com.amazon.amazonvideo.livingroom",    "state": "playing", "position_ms": 16016,   "title": "PrimeVideo",    "subtitle": null,    "position_reliable": true},
+  "media_session_peacock.txt":  {"package": "com.peacocktv.peacockandroid",         "state": "playing", "position_ms": 4177341857, "title": null,         "subtitle": null,    "position_reliable": false},
+  "media_session_dropout.txt":  {"package": null,                                   "state": null,      "position_ms": null,    "title": null,            "subtitle": null,    "position_reliable": false},
+  "audio_owner_dropout":        "com.collegehumor.chdropout",
+  "resumed_dropout":            "com.collegehumor.chdropout",
+  "resumed_prime":              "com.amazon.amazonvideo.livingroom"
+}

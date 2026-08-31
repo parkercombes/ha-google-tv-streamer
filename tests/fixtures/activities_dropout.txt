@@ -1,0 +1,3 @@
+ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)
+  ResumedActivity: ActivityRecord{bec9b4a u0 com.collegehumor.chdropout/tv.vhx.tv.home.TvHomeActivity t3945}
+    topResumedActivity=ActivityRecord{bec9b4a u0 com.collegehumor.chdropout/tv.vhx.tv.home.TvHomeActivity t3945}

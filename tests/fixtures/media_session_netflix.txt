@@ -1,0 +1,18 @@
+MEDIA SESSION SERVICE (dumpsys media_session)
+
+  Media button session is com.netflix.ninja/Netflix media session (userId=0)
+  Sessions Stack - have 4 sessions:
+    Netflix media session com.netflix.ninja/Netflix media session (userId=0)
+      ownerPid=13350, ownerUid=10116, userId=0
+      package=com.netflix.ninja
+      launchIntent=null
+      mediaButtonReceiver=null
+      active=true
+      flags=3
+      rating type=0
+      controllers: 3
+      state=PlaybackState {state=PLAYING(3), position=17324, buffered position=0, speed=1.0, updated=6042157829, actions=1049466, custom actions=[], active item id=-1, error=null}
+      metadata: null
+      queueTitle=null, size=0
+Audio playback (lastly played comes first)
+  uid=10116 packages=com.netflix.ninja
