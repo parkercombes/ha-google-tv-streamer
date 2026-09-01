@@ -186,7 +186,14 @@ class GoogleTVStreamerADB:
         return self._run(f"input keyevent {shlex.quote(keycode)}")
 
     def restart_overlay_app(self) -> None:
-        """Bring TvOverlay foreground briefly so Android restarts its HTTP server."""
+        """Bring TvOverlay foreground briefly so Android restarts its HTTP server.
+
+        Uses BACK (not HOME) to dismiss the setup screen so the device returns to
+        whatever was in front — the show the user was watching — rather than
+        dropping them on the launcher. This only runs as a fallback when the
+        server is found down (e.g. after the display slept); in normal use the
+        server stays up and overlays render over live content untouched.
+        """
 
         self._run(f"am start -n {shlex.quote(TVOVERLAY_SETUP_ACTIVITY)}")
-        self._run("input keyevent KEYCODE_HOME")
+        self._run("input keyevent KEYCODE_BACK")
