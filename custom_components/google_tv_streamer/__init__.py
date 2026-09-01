@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -16,6 +18,7 @@ from .const import (
     DEFAULT_OVERLAY_PORT,
     DOMAIN,
     KEY_COMMANDS,
+    OVERLAY_RECOVER_DELAY,
     PLATFORMS,
 )
 from .coordinator import GoogleTVStreamerDataUpdateCoordinator
@@ -77,9 +80,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
     coordinator = GoogleTVStreamerDataUpdateCoordinator(hass, adb, entry)
     await coordinator.async_config_entry_first_refresh()
+
+    async def _recover_overlay() -> None:
+        await hass.async_add_executor_job(adb.restart_overlay_app)
+        await asyncio.sleep(OVERLAY_RECOVER_DELAY)
+
     overlay = TvOverlayClient(
         entry.data[CONF_HOST],
         entry.data.get(CONF_OVERLAY_PORT, DEFAULT_OVERLAY_PORT),
+        recover=_recover_overlay,
     )
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {

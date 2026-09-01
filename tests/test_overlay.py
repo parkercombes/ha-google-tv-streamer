@@ -32,6 +32,31 @@ class FakePoster:
         return 204
 
 
+class SequencePoster:
+    """Return or raise configured outcomes for each POST call."""
+
+    def __init__(self, outcomes: list[int | BaseException]) -> None:
+        self.outcomes = outcomes
+        self.calls: list[tuple[str, dict[str, Any]]] = []
+
+    async def __call__(self, url: str, payload: dict[str, Any]) -> int:
+        self.calls.append((url, payload))
+        outcome = self.outcomes.pop(0)
+        if isinstance(outcome, BaseException):
+            raise outcome
+        return outcome
+
+
+class RecoverSpy:
+    """Record recover calls."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def __call__(self) -> None:
+        self.calls += 1
+
+
 def assert_no_snake_case_or_none(payload: dict[str, Any]) -> None:
     """Assert TvOverlay payloads use only API field names with no null values."""
 
@@ -128,3 +153,49 @@ async def test_set_overlay_posts_camel_case_payload_without_nulls() -> None:
         )
     ]
     assert_no_snake_case_or_none(poster.calls[0][1])
+
+
+async def test_connection_failure_recovers_once_then_retries_successfully() -> None:
+    """A connection failure revives TvOverlay and retries the POST once."""
+
+    poster = SequencePoster([ConnectionError("refused"), 200])
+    recover = RecoverSpy()
+    client = TvOverlayClient("192.0.2.10", poster=poster, recover=recover)
+
+    status = await client.notify("Door opened")
+
+    assert status == 200
+    assert recover.calls == 1
+    assert len(poster.calls) == 2
+
+
+async def test_healthy_post_does_not_recover() -> None:
+    """A successful POST does not run the recovery callback."""
+
+    poster = SequencePoster([200])
+    recover = RecoverSpy()
+    client = TvOverlayClient("192.0.2.10", poster=poster, recover=recover)
+
+    status = await client.notify("Door opened")
+
+    assert status == 200
+    assert recover.calls == 0
+    assert len(poster.calls) == 1
+
+
+async def test_repeated_connection_failure_recovers_at_most_once() -> None:
+    """Repeated connection failures surface after one recovery attempt."""
+
+    poster = SequencePoster([ConnectionError("refused"), ConnectionError("still refused")])
+    recover = RecoverSpy()
+    client = TvOverlayClient("192.0.2.10", poster=poster, recover=recover)
+
+    try:
+        await client.notify("Door opened")
+    except ConnectionError as err:
+        assert str(err) == "still refused"
+    else:
+        raise AssertionError("ConnectionError was not raised")
+
+    assert recover.calls == 1
+    assert len(poster.calls) == 2
