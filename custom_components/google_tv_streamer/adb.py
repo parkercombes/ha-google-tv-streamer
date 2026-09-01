@@ -39,6 +39,69 @@ def _session_blocks(text: str) -> list[str]:
     return blocks
 
 
+def _parse_media_button_session_package(text: str) -> str | None:
+    match = re.search(r"(?m)^\s+Media button session is ([^/\s]+)/", text)
+    if not match:
+        return None
+    package = match.group(1)
+    return None if package == "null" else package
+
+
+def _parse_media_session_block(block: str) -> dict | None:
+    package_match = re.search(r"(?m)^\s+package=([^\s]+)\s*$", block)
+    if not package_match:
+        return None
+    package = package_match.group(1)
+    if package == "com.google.android.bluetooth":
+        return None
+
+    state_match = re.search(
+        r"state=PlaybackState \{state=([A-Z]+)\(\d+\), position=(-?\d+), .*?actions=(\d+)",
+        block,
+    )
+    if not state_match:
+        return None
+
+    raw_state, raw_position, raw_actions = state_match.groups()
+    position_ms = int(raw_position)
+    title: str | None = None
+    subtitle: str | None = None
+
+    metadata_match = re.search(r"(?m)^\s+metadata:\s*(.*)$", block)
+    if metadata_match:
+        metadata = metadata_match.group(1).strip()
+        if metadata != "null":
+            description_match = re.search(r"description=(.*)$", metadata)
+            if description_match:
+                fields = [field.strip() for field in description_match.group(1).split(",")]
+                if fields:
+                    title = _none_if_null(fields[0])
+                if len(fields) > 1:
+                    subtitle = _none_if_null(fields[1])
+
+    return {
+        "package": package,
+        "state": _STATE_MAP.get(raw_state, "none"),
+        "position_ms": position_ms,
+        "actions": int(raw_actions),
+        "title": title,
+        "subtitle": subtitle,
+        "position_reliable": position_ms <= _UNRELIABLE_POSITION_THRESHOLD_MS,
+    }
+
+
+def parse_media_session_for_package(text: str, package: str | None) -> dict | None:
+    """Return a package's media session, regardless of active flag."""
+
+    if package is None:
+        return None
+    for block in _session_blocks(text):
+        session = _parse_media_session_block(block)
+        if session is not None and session["package"] == package:
+            return session
+    return None
+
+
 def parse_active_media_session(text: str) -> dict | None:
     """Return the active, real media-app session parsed from dumpsys media_session.
 
@@ -47,48 +110,11 @@ def parse_active_media_session(text: str) -> dict | None:
     """
 
     for block in _session_blocks(text):
-        package_match = re.search(r"(?m)^\s+package=([^\s]+)\s*$", block)
-        if not package_match:
-            continue
-        package = package_match.group(1)
-        if package == "com.google.android.bluetooth":
-            continue
         if not re.search(r"(?m)^\s+active=true\s*$", block):
             continue
-
-        state_match = re.search(
-            r"state=PlaybackState \{state=([A-Z]+)\(\d+\), position=(-?\d+), .*?actions=(\d+)",
-            block,
-        )
-        if not state_match:
-            continue
-
-        raw_state, raw_position, raw_actions = state_match.groups()
-        position_ms = int(raw_position)
-        title: str | None = None
-        subtitle: str | None = None
-
-        metadata_match = re.search(r"(?m)^\s+metadata:\s*(.*)$", block)
-        if metadata_match:
-            metadata = metadata_match.group(1).strip()
-            if metadata != "null":
-                description_match = re.search(r"description=(.*)$", metadata)
-                if description_match:
-                    fields = [field.strip() for field in description_match.group(1).split(",")]
-                    if fields:
-                        title = _none_if_null(fields[0])
-                    if len(fields) > 1:
-                        subtitle = _none_if_null(fields[1])
-
-        return {
-            "package": package,
-            "state": _STATE_MAP.get(raw_state, "none"),
-            "position_ms": position_ms,
-            "actions": int(raw_actions),
-            "title": title,
-            "subtitle": subtitle,
-            "position_reliable": position_ms <= _UNRELIABLE_POSITION_THRESHOLD_MS,
-        }
+        session = _parse_media_session_block(block)
+        if session is not None:
+            return session
 
     return None
 
@@ -157,6 +183,18 @@ class GoogleTVStreamerADB:
         """
 
         output = self._run("dumpsys media_session")
+        session = parse_media_session_for_package(
+            output,
+            _parse_media_button_session_package(output),
+        )
+        if session is not None:
+            return session
+
+        foreground_package = self.current_app()
+        session = parse_media_session_for_package(output, foreground_package)
+        if session is not None:
+            return session
+
         session = parse_active_media_session(output)
         if session is not None:
             return session
@@ -164,8 +202,9 @@ class GoogleTVStreamerADB:
         owners = parse_audio_owner(output)
         if not owners:
             return None
+        package = foreground_package if foreground_package in owners else owners[0]
         return {
-            "package": owners[0],
+            "package": package,
             "state": "playing",
             "position_ms": None,
             "actions": 0,
