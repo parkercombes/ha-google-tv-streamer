@@ -42,11 +42,13 @@ to expose. The table reflects measured results on a real device (2026-08-31).
 | Prime Video (`com.amazon.amazonvideo.livingroom`) | ✅ | ✅ | ✅ | full | ❌ generic `PrimeVideo` |
 | Peacock (`com.peacocktv.peacockandroid`) | ✅ | ✅ | ⚠️ unreliable | limited | ❌ |
 | Dropout (`com.collegehumor.chdropout`) | ✅ via resumed-activity + audio-owner | ❌ | ❌ | keyevents only | ❌ |
-| HBO Max / Max (`com.wbd.stream`) | listed | pending | pending | pending | pending |
+| HBO Max / Max (`com.wbd.stream`) | ✅ | ✅ | ✅ | full | ✅ episode title (series in subtitle) |
 
-**Titles are the exception, not the rule.** Only YouTube reliably provides real
-in-app content titles; other apps withhold or genericize them. This is an Android
-media-session limitation, not something the integration can work around.
+**Titles are the exception, not the rule.** Only **YouTube** and **HBO Max/Max**
+reliably provide real in-app content titles (HBO Max also exposes the series name
+in the subtitle field); Netflix, Prime Video, Peacock, and Dropout withhold or
+genericize them. This is an Android media-session limitation, not something the
+integration can work around.
 
 ## Installation
 
