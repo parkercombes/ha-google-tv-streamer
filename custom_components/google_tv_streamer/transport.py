@@ -12,6 +12,9 @@ except ImportError:
     from adb import GoogleTVStreamerADB
 
 
+ADB_AUTH_TIMEOUT_S = 30.0
+
+
 class AdbTransport:
     """TCP ADB transport with injectable device construction."""
 
@@ -41,7 +44,7 @@ class AdbTransport:
 
         device = self._device_factory(self.host, self.port)
         if self.signer is not None:
-            result = device.connect(rsa_keys=[self.signer])
+            result = device.connect(rsa_keys=[self.signer], auth_timeout_s=ADB_AUTH_TIMEOUT_S)
         else:
             result = device.connect()
         self._device = device
