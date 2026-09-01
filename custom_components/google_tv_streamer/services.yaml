@@ -25,3 +25,148 @@ send_key:
       required: true
       selector:
         text:
+
+show_overlay:
+  name: Show overlay
+  description: Show a transient TvOverlay notification on the streamer.
+  fields:
+    message:
+      name: Message
+      description: Notification message text.
+      required: true
+      selector:
+        text:
+    title:
+      name: Title
+      description: Optional notification title.
+      required: false
+      selector:
+        text:
+    source:
+      name: Source
+      description: Optional notification source label.
+      required: false
+      selector:
+        text:
+    duration:
+      name: Duration
+      description: Display duration in seconds.
+      required: false
+      selector:
+        number:
+          min: 0
+          mode: box
+    image:
+      name: Image
+      description: MDI icon name, image URL, or base64 image.
+      required: false
+      selector:
+        text:
+    corner:
+      name: Corner
+      description: Screen corner for the notification.
+      required: false
+      selector:
+        select:
+          options:
+            - bottom_start
+            - bottom_end
+            - top_start
+            - top_end
+    small_icon:
+      name: Small icon
+      description: Optional small icon.
+      required: false
+      selector:
+        text:
+    small_icon_color:
+      name: Small icon color
+      description: Optional small icon color as #RRGGBB or #AARRGGBB.
+      required: false
+      selector:
+        text:
+
+show_fixed_notification:
+  name: Show fixed notification
+  description: Show or update a persistent TvOverlay corner badge.
+  fields:
+    id:
+      name: ID
+      description: Fixed notification identifier.
+      required: true
+      selector:
+        text:
+    message:
+      name: Message
+      description: Optional badge message.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: Optional badge icon.
+      required: false
+      selector:
+        text:
+    border_color:
+      name: Border color
+      description: Optional border color as #RRGGBB or #AARRGGBB.
+      required: false
+      selector:
+        text:
+    background_color:
+      name: Background color
+      description: Optional background color as #RRGGBB or #AARRGGBB.
+      required: false
+      selector:
+        text:
+    shape:
+      name: Shape
+      description: Badge shape.
+      required: false
+      selector:
+        select:
+          options:
+            - circle
+            - rounded
+            - rectangular
+
+clear_fixed_notification:
+  name: Clear fixed notification
+  description: Clear a persistent TvOverlay corner badge.
+  fields:
+    id:
+      name: ID
+      description: Fixed notification identifier to clear.
+      required: true
+      selector:
+        text:
+
+set_overlay:
+  name: Set overlay
+  description: Update TvOverlay overlay visibility settings.
+  fields:
+    overlay_visibility:
+      name: Overlay visibility
+      description: Overlay visibility from 0 to 95.
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 95
+          mode: box
+    clock_overlay_visibility:
+      name: Clock overlay visibility
+      description: Clock overlay visibility from 0 to 95.
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 95
+          mode: box
+    hot_corner:
+      name: Hot corner
+      description: TvOverlay hot corner setting.
+      required: false
+      selector:
+        text:

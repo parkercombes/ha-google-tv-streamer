@@ -4,6 +4,7 @@ from __future__ import annotations
 
 DOMAIN = "google_tv_streamer"
 DEFAULT_PORT = 5555
+DEFAULT_OVERLAY_PORT = 5001
 
 APP_PACKAGES = {
     "Netflix": "com.netflix.ninja",
@@ -30,6 +31,7 @@ KEY_COMMANDS = {
 }
 
 CONF_HOST = "host"
+CONF_OVERLAY_PORT = "overlay_port"
 CONF_PORT = "port"
 CONF_SERIAL = "serial"
 
