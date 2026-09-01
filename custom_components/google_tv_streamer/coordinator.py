@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+import logging
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -13,6 +14,7 @@ from .adb import GoogleTVStreamerADB
 from .const import DOMAIN
 
 SCAN_INTERVAL = timedelta(seconds=10)
+_LOGGER = logging.getLogger(__name__)
 
 
 class GoogleTVStreamerDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -27,7 +29,7 @@ class GoogleTVStreamerDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]
         """Initialize the coordinator."""
         super().__init__(
             hass,
-            logger=None,
+            logger=_LOGGER,
             name=f"{DOMAIN}_{entry.entry_id}",
             update_interval=SCAN_INTERVAL,
         )

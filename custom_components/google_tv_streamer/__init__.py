@@ -8,9 +8,9 @@ from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import config_validation as cv
 import voluptuous as vol
 
-from .adb import GoogleTVStreamerADB
 from .const import APP_PACKAGES, CONF_HOST, CONF_PORT, DOMAIN, KEY_COMMANDS, PLATFORMS
 from .coordinator import GoogleTVStreamerDataUpdateCoordinator
+from .transport import connect_streamer
 
 PLATFORM_TYPES = [Platform(platform) for platform in PLATFORMS]
 
@@ -26,7 +26,8 @@ SEND_KEY_SCHEMA = vol.Schema({vol.Required("key"): cv.string})
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Google TV Streamer from a config entry."""
-    adb = GoogleTVStreamerADB(
+    adb = await hass.async_add_executor_job(
+        connect_streamer,
         entry.data[CONF_HOST],
         entry.data.get(CONF_PORT),
     )
