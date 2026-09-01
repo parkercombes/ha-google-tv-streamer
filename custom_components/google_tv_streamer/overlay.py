@@ -6,6 +6,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 Poster = Callable[[str, dict[str, Any]], Awaitable[int]]
+Recover = Callable[[], Awaitable[None]]
 
 
 class TvOverlayClient:
@@ -17,6 +18,8 @@ class TvOverlayClient:
         port: int = 5001,
         session: Any | None = None,
         poster: Poster | None = None,
+        *,
+        recover: Recover | None = None,
     ) -> None:
         """Create a TvOverlay client for host:port."""
 
@@ -25,6 +28,7 @@ class TvOverlayClient:
         self.base_url = f"http://{host}:{port}"
         self._session = session
         self._poster = poster
+        self._recover = recover
         self._owns_session = False
 
     async def notify(
@@ -128,19 +132,29 @@ class TvOverlayClient:
         """POST JSON to TvOverlay and return the HTTP status."""
 
         url = f"{self.base_url}{path}"
-        if self._poster is not None:
-            return await self._poster(url, payload)
 
-        session = self._session
-        if session is None:
-            from aiohttp import ClientSession
+        async def send() -> int:
+            if self._poster is not None:
+                return await self._poster(url, payload)
 
-            session = ClientSession()
-            self._session = session
-            self._owns_session = True
+            session = self._session
+            if session is None:
+                from aiohttp import ClientSession
 
-        async with session.post(url, json=payload) as response:
-            return response.status
+                session = ClientSession()
+                self._session = session
+                self._owns_session = True
+
+            async with session.post(url, json=payload) as response:
+                return response.status
+
+        try:
+            return await send()
+        except OSError:
+            if self._recover is None:
+                raise
+            await self._recover()
+            return await send()
 
     @staticmethod
     def _payload(values: dict[str, Any]) -> dict[str, Any]:

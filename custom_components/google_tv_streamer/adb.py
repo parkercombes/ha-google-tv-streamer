@@ -17,6 +17,8 @@ _STATE_MAP = {
 }
 
 _UNRELIABLE_POSITION_THRESHOLD_MS = 86_400_000
+TVOVERLAY_PACKAGE = "com.tabdeveloper.tvoverlay"
+TVOVERLAY_SETUP_ACTIVITY = f"{TVOVERLAY_PACKAGE}/.SetupActivity"
 
 
 def _none_if_null(value: str | None) -> str | None:
@@ -182,3 +184,9 @@ class GoogleTVStreamerADB:
         """Send an Android input keyevent by keycode or key name."""
 
         return self._run(f"input keyevent {shlex.quote(keycode)}")
+
+    def restart_overlay_app(self) -> None:
+        """Bring TvOverlay foreground briefly so Android restarts its HTTP server."""
+
+        self._run(f"am start -n {shlex.quote(TVOVERLAY_SETUP_ACTIVITY)}")
+        self._run("input keyevent KEYCODE_HOME")
