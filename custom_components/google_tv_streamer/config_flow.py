@@ -28,11 +28,15 @@ class GoogleTVStreamerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             port = user_input.get(CONF_PORT, DEFAULT_PORT)
             await self.async_set_unique_id(str(host).lower())
             self._abort_if_unique_id_configured(updates={CONF_HOST: host, CONF_PORT: port})
-            await self.hass.async_add_executor_job(connect_streamer, host, port)
-            return self.async_create_entry(
-                title=user_input.get(CONF_NAME, host),
-                data={CONF_HOST: host, CONF_PORT: port},
-            )
+            try:
+                await self.hass.async_add_executor_job(connect_streamer, host, port)
+            except Exception:
+                errors["base"] = "cannot_connect"
+            else:
+                return self.async_create_entry(
+                    title=user_input.get(CONF_NAME, host),
+                    data={CONF_HOST: host, CONF_PORT: port},
+                )
 
         return self.async_show_form(
             step_id="user",
@@ -44,28 +48,4 @@ class GoogleTVStreamerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
-        )
-
-    async def async_step_zeroconf(self, discovery_info: Any) -> FlowResult:
-        """Handle ADB mDNS discovery."""
-        host = discovery_info.host
-        port = discovery_info.port or DEFAULT_PORT
-        properties = discovery_info.properties or {}
-        serial = (
-            properties.get("adb_serial")
-            or properties.get("serial")
-            or properties.get("ro.serialno")
-            or host
-        )
-        if isinstance(serial, bytes):
-            serial = serial.decode(errors="ignore")
-
-        await self.async_set_unique_id(str(serial).lower())
-        self._abort_if_unique_id_configured(updates={CONF_HOST: host, CONF_PORT: port})
-        self.context["title_placeholders"] = {"name": discovery_info.name or host}
-        await self.hass.async_add_executor_job(connect_streamer, host, port)
-
-        return self.async_create_entry(
-            title=discovery_info.name or host,
-            data={CONF_HOST: host, CONF_PORT: port, "serial": serial},
         )

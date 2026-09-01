@@ -8,10 +8,5 @@
   "config_flow": true,
   "iot_class": "local_polling",
   "integration_type": "device",
-  "requirements": ["adb-shell[async]>=0.4.4"],
-  "zeroconf": [
-    {
-      "type": "_adb-tls-connect._tcp.local."
-    }
-  ]
+  "requirements": ["adb-shell[async]>=0.4.4"]
 }
