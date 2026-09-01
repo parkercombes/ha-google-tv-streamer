@@ -1,26 +1,27 @@
 # Google TV Streamer
 
-Control your Google TV Streamer (2024) over ADB with media player and remote entities.
+Deep control of the Google TV Streamer (2024, Android TV OS 14) over network ADB.
 
 ## Features
 
 - mDNS auto-discovery (no fixed ADB port)
 - Media player for playback state and position
-- Remote control via keyevents
-- App launching
-- On-screen notifications via TvOverlay
+- Remote control: D-pad, transport, volume, power
+- App launching and deep links
+- On-screen overlays via TvOverlay — rendered over live playback, self-healing across display sleep
 
 ## Setup
 
-Enable Developer options and Wireless debugging on the device, then install via HACS or manually.
+1. Enable Developer options and Wireless debugging on the streamer.
+2. Install via HACS or manually, then add the integration (it auto-discovers).
+3. For overlays only: sideload the patched TvOverlay app and grant it overlay
+   access on the TV — see the README's "On-screen overlays" section.
 
-## Capability Matrix
+## Notes
 
-See the README for the detailed per-app capability table.
-
-## Limitations
-
-Real in-app titles are only reliably available from YouTube; other apps may withhold or genericize titles.
+Real in-app titles are reliably available only from YouTube; other apps withhold
+or genericize them (Android media-session limitation). See the README's capability
+matrix for per-app detail.
 
 ## License
 
