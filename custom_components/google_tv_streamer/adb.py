@@ -17,6 +17,9 @@ _STATE_MAP = {
 }
 
 _UNRELIABLE_POSITION_THRESHOLD_MS = 86_400_000
+# Android TV home screen packages can appear in the historical audio list, but
+# launcher UI is never app media playback.
+_LAUNCHER_PACKAGE_MARKER = "launcher"
 TVOVERLAY_PACKAGE = "com.tabdeveloper.tvoverlay"
 TVOVERLAY_SETUP_ACTIVITY = f"{TVOVERLAY_PACKAGE}/.SetupActivity"
 
@@ -137,6 +140,10 @@ def parse_audio_owner(text: str) -> list[str]:
     return owners
 
 
+def _is_launcher_package(package: str | None) -> bool:
+    return package is not None and _LAUNCHER_PACKAGE_MARKER in package
+
+
 def parse_resumed_activity(text: str) -> str | None:
     """Return the foreground package from dumpsys activity activities.
 
@@ -200,11 +207,14 @@ class GoogleTVStreamerADB:
             return session
 
         owners = parse_audio_owner(output)
-        if not owners:
+        if (
+            foreground_package is None
+            or _is_launcher_package(foreground_package)
+            or foreground_package not in owners
+        ):
             return None
-        package = foreground_package if foreground_package in owners else owners[0]
         return {
-            "package": package,
+            "package": foreground_package,
             "state": "playing",
             "position_ms": None,
             "actions": 0,
