@@ -11,7 +11,7 @@ that render **over whatever you're watching** without interrupting playback.
 
 ## Features
 
-- **mDNS auto-discovery** of the streamer (no fixed ADB port to hunt for)
+- **Manual setup by host** over plain ADB on port `5555`. There is no auto-discovery yet: see *Configuration*
 - **Media player entity** — playback state and position where the app exposes it
 - **Remote entity** — D-pad, back/home, transport, volume, and power keyevents
 - **App launching** by friendly name/package, or any deep-link URL
@@ -77,14 +77,18 @@ integration can work around.
 
 ## Configuration
 
-The integration auto-discovers the streamer over mDNS — usually it just appears
-under **Settings → Devices & Services** as a discovered device.
-
-To add it by hand:
+Setup is manual, like Home Assistant's own `androidtv` ADB integration.
 
 1. **Settings → Devices & Services → Add Integration**.
 2. Search **Google TV Streamer**.
-3. Enter the device's host/IP (leave blank to rely on discovery) and submit.
+3. Enter the streamer's host/IP and port `5555`, then submit.
+4. **Accept the "Allow wireless debugging" prompt on the TV** within about 30 seconds.
+   This authorizes Home Assistant's own ADB key permanently.
+
+There is no auto-discovery yet. The streamer advertises only an ADB-over-TLS port
+over mDNS, and the `adb-shell` library can't speak TLS. Discovery will return once
+TLS or a confirm-on-5555 flow is supported. Give the streamer a DHCP reservation
+so its IP doesn't change.
 
 ## On-screen overlays (TvOverlay)
 
@@ -178,11 +182,10 @@ automation:
 ## Limitations
 
 - **Titles/position are app-controlled.** Real in-app titles are reliable only
-  on YouTube; position can be unreliable (e.g. Peacock). This is an Android
+  on YouTube and HBO Max / Max; position can be unreliable (e.g. Peacock). This is an Android
   media-session constraint — see the [capability matrix](#capability-matrix).
 - **Overlays need TvOverlay** sideloaded and granted (above). Core control
   (remote, launch, now-playing) works without it.
-- **HBO Max / Max** now-playing metadata is not yet characterized (pending).
 
 ## Development
 

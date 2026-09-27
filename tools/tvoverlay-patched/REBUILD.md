@@ -74,7 +74,7 @@ cp ./patched-unsigned.apk TvOverlay-patched-signed.apk   # signer overwrites in 
 ## Install on the Streamer
 
 ```bash
-adb connect 192.168.1.189:5555
+adb connect <streamer-ip>:5555
 adb uninstall com.tabdeveloper.tvoverlay            # if the broken original is present
 adb install TvOverlay-patched-signed.apk
 adb shell appops set com.tabdeveloper.tvoverlay SYSTEM_ALERT_WINDOW allow
