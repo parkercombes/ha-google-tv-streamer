@@ -16,12 +16,14 @@ async def test_user_step_creates_entry(hass):
     with patch(
         "custom_components.google_tv_streamer.config_flow.connect_streamer",
         return_value=object(),
-    ) as connect:
+    ) as connect, patch("custom_components.google_tv_streamer.async_setup_entry", return_value=True):
         result = await hass.config_entries.flow.async_init(
             DOMAIN,
             context={"source": config_entries.SOURCE_USER},
             data={CONF_HOST: "192.0.2.10", CONF_PORT: 5555, CONF_NAME: "Living Room TV"},
         )
+
+        await hass.async_block_till_done()
 
     assert result["type"] == "create_entry"
     assert result["title"] == "Living Room TV"

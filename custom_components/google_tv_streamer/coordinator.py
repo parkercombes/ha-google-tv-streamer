@@ -9,6 +9,7 @@ from typing import Any
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.util import dt as dt_util
 
 from .adb import GoogleTVStreamerADB
 from .const import DOMAIN
@@ -43,4 +44,5 @@ class GoogleTVStreamerDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]
         return {
             "current_app": current_app,
             "now_playing": now_playing,
+            "position_updated_at": dt_util.utcnow(),
         }

@@ -38,7 +38,7 @@ def _read_fixture(name: str) -> str:
 def test_connect_streamer_parses_now_playing_and_current_app() -> None:
     fake_device = FakeDevice(
         {
-            "dumpsys media_session": _read_fixture("media_session_prime.txt"),
+            "cat /proc/uptime; dumpsys media_session": _read_fixture("media_session_prime.txt"),
             "dumpsys activity activities": _read_fixture("activities_prime.txt"),
         }
     )
@@ -54,6 +54,8 @@ def test_connect_streamer_parses_now_playing_and_current_app() -> None:
         "package": "com.amazon.amazonvideo.livingroom",
         "state": "playing",
         "position_ms": 16016,
+        "speed": 1.0,
+        "updated_ms": 6042504052,
         "actions": 1049455,
         "title": "PrimeVideo",
         "subtitle": None,
@@ -81,7 +83,7 @@ def test_commands_are_sent_through_injected_device() -> None:
 def test_now_playing_falls_back_to_audio_owner() -> None:
     fake_device = FakeDevice(
         {
-            "dumpsys media_session": _read_fixture("media_session_dropout.txt"),
+            "cat /proc/uptime; dumpsys media_session": _read_fixture("media_session_dropout.txt"),
             "dumpsys activity activities": _read_fixture("activities_dropout.txt"),
         }
     )

@@ -66,6 +66,7 @@ def _parse_media_session_block(block: str) -> dict | None:
         return None
 
     raw_state, raw_position, raw_actions = state_match.groups()
+    timing = re.search(r"speed=([-\d.]+), updated=(\d+)", block)
     position_ms = int(raw_position)
     title: str | None = None
     subtitle: str | None = None
@@ -86,10 +87,12 @@ def _parse_media_session_block(block: str) -> dict | None:
         "package": package,
         "state": _STATE_MAP.get(raw_state, "none"),
         "position_ms": position_ms,
+        "speed": float(timing.group(1)) if timing else 0.0,
+        "updated_ms": int(timing.group(2)) if timing else None,
         "actions": int(raw_actions),
         "title": title,
         "subtitle": subtitle,
-        "position_reliable": position_ms <= _UNRELIABLE_POSITION_THRESHOLD_MS,
+        "position_reliable": 0 <= position_ms <= _UNRELIABLE_POSITION_THRESHOLD_MS,
     }
 
 
@@ -189,22 +192,40 @@ class GoogleTVStreamerADB:
         fields rather than inventing playback metadata.
         """
 
-        output = self._run("dumpsys media_session")
+        output = self._run("cat /proc/uptime; dumpsys media_session")
+        try:
+            uptime_ms = float(output.splitlines()[0].split()[0]) * 1000
+        except (ValueError, IndexError):
+            uptime_ms = None
+
+        def live_position(session: dict) -> dict:
+            """Project a playing anchor to the sampled device uptime."""
+            updated = session.get("updated_ms")
+            if (
+                session.get("position_reliable")
+                and session.get("state") == "playing"
+                and uptime_ms is not None
+                and updated is not None
+                and 0 < updated <= uptime_ms
+            ):
+                session["position_ms"] += (uptime_ms - updated) * session.get("speed", 0.0)
+            return session
+
         session = parse_media_session_for_package(
             output,
             _parse_media_button_session_package(output),
         )
         if session is not None:
-            return session
+            return live_position(session)
 
         foreground_package = self.current_app()
         session = parse_media_session_for_package(output, foreground_package)
         if session is not None:
-            return session
+            return live_position(session)
 
         session = parse_active_media_session(output)
         if session is not None:
-            return session
+            return live_position(session)
 
         owners = parse_audio_owner(output)
         if (

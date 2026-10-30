@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.media_player import MediaPlayerEntity
@@ -111,6 +112,13 @@ class GoogleTVStreamerMediaPlayer(
             return None
         position_ms = media.get("position_ms")
         return None if position_ms is None else position_ms / 1000
+
+    @property
+    def media_position_updated_at(self) -> datetime | None:
+        """Return the UTC sample time corresponding to the reported position."""
+        if self.media_position is None:
+            return None
+        return self.coordinator.data.get("position_updated_at")
 
     async def async_media_play(self) -> None:
         """Send play/pause key event."""

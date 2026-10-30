@@ -34,7 +34,7 @@ def test_now_playing_reports_real_netflix_device_playback_state(
     expected_state: str,
 ) -> None:
     def shell_runner(cmd: str) -> str:
-        if cmd == "dumpsys media_session":
+        if cmd == "cat /proc/uptime; dumpsys media_session":
             return _read_fixture(fixture_name)
         if cmd == "dumpsys activity activities":
             return NETFLIX_ACTIVITY
@@ -47,7 +47,7 @@ def test_now_playing_reports_real_netflix_device_playback_state(
 
 def test_now_playing_does_not_report_launcher_home_stale_audio_as_playing() -> None:
     def shell_runner(cmd: str) -> str:
-        if cmd == "dumpsys media_session":
+        if cmd == "cat /proc/uptime; dumpsys media_session":
             return _read_fixture("media_session_launcher_home_stale.txt")
         if cmd == "dumpsys activity activities":
             return LAUNCHER_ACTIVITY
